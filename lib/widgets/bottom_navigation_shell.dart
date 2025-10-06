@@ -44,8 +44,8 @@ class BottomNavigationShell extends StatelessWidget {
           body: navigationShell,
           extendBody: true,
           bottomNavigationBar: Container(
-            margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.04, vertical: 0),
-            height: MediaQuery.of(context).padding.bottom + screenHeight * 0.045,
+            margin: EdgeInsets.zero,
+            height: MediaQuery.of(context).padding.bottom + screenHeight * 0.05,
             decoration: const BoxDecoration(
               color: Color(0xFF0b395e),
             ),
