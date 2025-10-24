@@ -1,11 +1,25 @@
 import 'package:anime_verse/widgets/anime_view.dart';
 import 'package:anime_verse/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import '../providers/app_state_provider.dart';
 import '../widgets/genre_list.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,75 +40,103 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Search Bar
-            Padding(
-              padding: EdgeInsets.all(screenWidth * 0.04),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(screenWidth * 0.075),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      blurRadius: screenWidth * 0.02,
-                      offset: Offset(0, screenHeight * 0.005),
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "Anime Title",
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
-                      fontSize: screenWidth * 0.04,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: Colors.grey,
-                      size: screenWidth * 0.06,
-                    ),
-                    border: OutlineInputBorder(
+      body: Consumer<AppStateProvider>(
+        builder: (context, provider, child) {
+          final filteredAnime = provider.getFilteredAnimeForHome();
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Search Bar
+                Padding(
+                  padding: EdgeInsets.all(screenWidth * 0.04),
+                  child: Container(
+                    decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(screenWidth * 0.075),
-                      borderSide: BorderSide.none,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          blurRadius: screenWidth * 0.02,
+                          offset: Offset(0, screenHeight * 0.005),
+                        ),
+                      ],
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(screenWidth * 0.075),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(screenWidth * 0.075),
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
-                    filled: true,
-                    fillColor: Color(0xFF0b395e),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.05,
-                      vertical: screenHeight * 0.015,
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (value) {
+                        provider.setHomeSearchQuery(value);
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Anime Title",
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: screenWidth * 0.04,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.grey,
+                          size: screenWidth * 0.06,
+                        ),
+                        suffixIcon: provider.homeSearchQuery.isNotEmpty
+                            ? IconButton(
+                          icon: Icon(
+                            Icons.clear,
+                            color: Colors.grey,
+                            size: screenWidth * 0.06,
+                          ),
+                          onPressed: () {
+                            _searchController.clear();
+                            provider.setHomeSearchQuery('');
+                          },
+                        )
+                            : null,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(screenWidth * 0.075),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(screenWidth * 0.075),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(screenWidth * 0.075),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        filled: true,
+                        fillColor: Color(0xFF0b395e),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: screenWidth * 0.05,
+                          vertical: screenHeight * 0.015,
+                        ),
+                      ),
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.04,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  style: TextStyle(
-                    fontSize: screenWidth * 0.04,
-                    color: Colors.white,
-                  ),
                 ),
-              )
+
+                // Genre List
+                GenreList(
+                  selected: provider.selectedGenre,
+                  onGenreSelected: (genre) {
+                    provider.setSelectedGenre(genre);
+                  },
+                ),
+
+                SizedBox(height: screenHeight * 0.03),
+
+                // Anime List
+                AnimeView(animeList: filteredAnime),
+
+                SizedBox(height: screenHeight * 0.025),
+              ],
             ),
-
-            // Genre List
-            GenreList(),
-
-            SizedBox(height: screenHeight * 0.03),
-
-            // Anime List
-            const AnimeView(),
-
-            SizedBox(height: screenHeight * 0.025),
-          ],
-        ),
-      )
+          );
+        },
+      ),
     );
   }
 }
