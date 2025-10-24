@@ -165,6 +165,9 @@ class AppStateProvider extends ChangeNotifier {
     if (_favoriteSearchQuery.isNotEmpty) {
       result = result.where((anime) {
         return anime.title.toLowerCase().contains(_favoriteSearchQuery.toLowerCase());
+        /*searchingan kita buat lower biar gada sensitive case. homesearchquery
+         itu buat apabila sesuai kondisi maka dirender di homescreen bagian
+         filter anime list*/
       }).toList();
     }
 

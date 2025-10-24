@@ -37,13 +37,13 @@ GoRouter createRouter() {
       ),
 
       GoRoute(
-        path: '${AppRoutes.details}/:id',
-        name: 'detail',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
-          final animeId = state.pathParameters['id'] ?? '';
-          return DetailScreen(animeId: animeId);
-        }
+          path: '${AppRoutes.details}/:id',
+          name: 'detail',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) {
+            final animeId = state.pathParameters['id'] ?? '';
+            return DetailScreen(animeId: animeId);
+          }
       ),
 
       StatefulShellRoute.indexedStack(

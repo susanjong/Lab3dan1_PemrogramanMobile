@@ -2,8 +2,8 @@ import 'package:anime_verse/data/dummy_data.dart';
 import 'package:anime_verse/models/anime.dart';
 import 'package:anime_verse/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
-// import '../providers/app_state_provider.dart';
+import 'package:provider/provider.dart';
+import '../providers/app_state_provider.dart';
 
 class DetailScreen extends StatelessWidget {
   final String animeId;
@@ -170,38 +170,38 @@ class DetailScreen extends StatelessWidget {
                           ),
                         ),
                         // Favorite Button
-                        // Consumer<AppStateProvider>(
-                        //   builder: (context, favoriteProvider, child) {
-                        //     final isFavorite = favoriteProvider.isFavorite(anime.id);
-                        //
-                        //     return Container(
-                        //       margin: EdgeInsets.only(left: screenWidth * 0.03),
-                        //       decoration: BoxDecoration(
-                        //         color: isFavorite
-                        //           ? Colors.red.withValues(alpha: 0.9)
-                        //           : Colors.black.withValues(alpha: 0.5),
-                        //         shape: BoxShape.circle,
-                        //         boxShadow: [
-                        //           BoxShadow(
-                        //             color: Colors.black.withValues(alpha: 0.5),
-                        //             blurRadius: 8,
-                        //             offset: const Offset(0, 2),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //       child: IconButton(
-                        //         icon: Icon(
-                        //           isFavorite ? Icons.favorite : Icons.favorite_border,
-                        //           color: Colors.white,
-                        //           size: screenWidth * 0.07,
-                        //         ),
-                        //         onPressed: () {
-                        //           favoriteProvider.toggleFavorite(anime);
-                        //         },
-                        //       ),
-                        //     );
-                        //   },
-                        // ),
+                        Consumer<AppStateProvider>(
+                          builder: (context, favoriteProvider, child) {
+                            final isFavorite = favoriteProvider.isFavorite(anime.id);
+
+                            return Container(
+                              margin: EdgeInsets.only(left: screenWidth * 0.03),
+                              decoration: BoxDecoration(
+                                color: isFavorite
+                                    ? Colors.red.withValues(alpha: 0.9)
+                                    : Colors.black.withValues(alpha: 0.5),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.5),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                                  color: Colors.white,
+                                  size: screenWidth * 0.07,
+                                ),
+                                onPressed: () {
+                                  favoriteProvider.toggleFavorite(anime);
+                                },
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
