@@ -38,8 +38,10 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w800,
-            fontSize: screenWidth * 0.06,
+            fontSize: (screenWidth * 0.06).clamp(18.0, 26.0),
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -49,15 +51,19 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         children: [
           // Search Bar
           Padding(
-            padding: EdgeInsets.all(screenWidth * 0.04),
+            padding: EdgeInsets.symmetric(
+              horizontal: 16.0, // Fixed padding, not used %
+              vertical: 12.0,
+            ),
             child: Container(
+              width: screenWidth - 32, // Ensure tidak overflow (16px * 2)
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(screenWidth * 0.075),
+                borderRadius: BorderRadius.circular(25),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.3),
-                    blurRadius: screenWidth * 0.02,
-                    offset: Offset(0, screenHeight * 0.005),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -72,52 +78,64 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       hintText: "Anime Title",
                       hintStyle: TextStyle(
                         color: Colors.grey,
-                        fontSize: screenWidth * 0.04,
+                        fontSize: (screenWidth * 0.038).clamp(13.0, 16.0),
                       ),
                       prefixIcon: Icon(
                         Icons.search,
                         color: Colors.grey,
-                        size: screenWidth * 0.06,
+                        size: (screenWidth * 0.055).clamp(20.0, 24.0),
                       ),
                       suffixIcon: provider.favoriteSearchQuery.isNotEmpty
                           ? IconButton(
-                        icon: Icon(Icons.clear, color: Colors.white),
+                        icon: Icon(
+                          Icons.clear,
+                          color: Colors.white,
+                          size: (screenWidth * 0.05).clamp(18.0, 22.0),
+                        ),
                         onPressed: () {
                           _searchController.clear();
                           provider.setFavoriteSearchQuery("");
                         },
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 40,
+                          minHeight: 40,
+                        ),
                       )
                           : null,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(screenWidth * 0.075),
+                        borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide.none,
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(screenWidth * 0.075),
+                        borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide.none,
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(screenWidth * 0.075),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: const BorderSide(color: Colors.white, width: 1.5),
                       ),
                       filled: true,
-                      fillColor: Color(0xFF0b395e),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: screenWidth * 0.05,
-                        vertical: screenHeight * 0.015,
+                      fillColor: const Color(0xFF0b395e),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 14,
                       ),
+                      isDense: true,
                     ),
                     style: TextStyle(
-                      fontSize: screenWidth * 0.04,
+                      fontSize: (screenWidth * 0.038).clamp(13.0, 16.0),
                       color: Colors.white,
                     ),
+                    maxLines: 1,
+                    textInputAction: TextInputAction.search,
                   );
                 },
               ),
             ),
           ),
 
-          SizedBox(height: screenHeight * 0.01),
+          SizedBox(height: 8),
 
           // Favorite Anime List - Dynamic with Provider
           Expanded(
@@ -129,52 +147,72 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 // Empty state
                 if (filteredFavorites.isEmpty) {
                   return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.favorite_border,
-                          size: screenWidth * 0.2,
-                          color: Colors.grey,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.favorite_border,
+                              size: (screenWidth * 0.18).clamp(60.0, 100.0),
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                              favoriteProvider.favoriteSearchQuery.isNotEmpty
+                                  ? 'No favorites found'
+                                  : 'No favorites yet',
+                              style: TextStyle(
+                                fontSize: (screenWidth * 0.045).clamp(16.0, 20.0),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              favoriteProvider.favoriteSearchQuery.isNotEmpty
+                                  ? 'Try a different search keyword.'
+                                  : 'Add some anime to your favorites!',
+                              style: TextStyle(
+                                fontSize: (screenWidth * 0.035).clamp(12.0, 16.0),
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        SizedBox(height: screenHeight * 0.02),
-                        Text(
-                          favoriteProvider.favoriteSearchQuery.isNotEmpty
-                              ? 'No favorites found'
-                              : 'No favorites yet',
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.05,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(height: screenHeight * 0.01),
-                        Text(
-                          favoriteProvider.favoriteSearchQuery.isNotEmpty
-                              ? 'Try a different search keyword.'
-                              : 'Add some anime to your favorites!',
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.04,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   );
                 }
 
                 // List of filtered favorites
-                return ListView.builder(
-                  padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
+                return ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  physics: const BouncingScrollPhysics(),
                   itemCount: filteredFavorites.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final anime = filteredFavorites[index];
-                    return FavoriteAnimeCard(
-                      id: anime.id,
-                      title: anime.title,
-                      genre: anime.genre,
-                      rating: anime.rating,
-                      imagePath: anime.imagePath,
+
+                    // Wrap card dengan SizedBox untuk constrain width
+                    return SizedBox(
+                      width: screenWidth - 32, // 16px padding * 2
+                      child: FavoriteAnimeCard(
+                        id: anime.id,
+                        title: anime.title,
+                        genre: anime.genre,
+                        rating: anime.rating,
+                        imagePath: anime.imagePath,
+                      ),
                     );
                   },
                 );
